@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - LR Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker-element/1.11.3/index.css">
+    <style>
+        .chat-container {
+            margin-top: 70px;
+            height: calc(100vh - 70px);
+            display: flex;
+        }
+
+        .chat-sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chat-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 500;
+        }
+
+        .chat-tab.active {
+            border-bottom: 2px solid var(--button-color);
+            color: var(--button-color);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-item:hover {
+            background: #f5f5f5;
+        }
+
+        .chat-item.active {
+            background: #e3f2fd;
+        }
+
+        .chat-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-item-info {
+            flex: 1;
+        }
+
+        .chat-item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .chat-item-preview {
+            font-size: 0.9rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f5f5f5;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .message.sent {
+            background: var(--button-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message img {
+            max-width: 200px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px 10px;
+            color: var(--button-color);
+        }
+
+        .chat-input button:hover {
+            opacity: 0.8;
+        }
+
+        .new-chat-btn {
+            margin: 15px;
+            padding: 10px;
+            background: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .new-chat-btn:hover {
+            background: #000066;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .search-bar {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .new-group-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-item:hover {
+            background: #f5f5f5;
+        }
+
+        .user-item.selected {
+            background: #e3f2fd;
+        }
+
+        .user-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .chat-item-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-left: auto;
+        }
+
+        .chat-item-status.online {
+            background: #4caf50;
+        }
+
+        .read-receipt {
+            font-size: 0.8rem;
+            color: #4caf50;
+            margin-left: 5px;
+        }
+
+        .typing-indicator {
+            padding: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .reaction-picker {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 5px 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .reaction-picker span {
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 10px;
+        }
+
+        .reaction-picker span:hover {
+            background: #f0f0f0;
+        }
+
+        .message-reactions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .reaction {
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .reaction.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .chat-header-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-header-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .chat-header-actions button:hover {
+            background: #e0e0e0;
+        }
+
+        #importChatInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="/" class="logo">
+                <span>LR Hub</span>
+            </a>
+            <div class="profile-section">
+                <img src="default-profile.jpg" alt="Profile" class="profile-pic">
+            </div>
+        </div>
+    </nav>
+
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <div class="search-bar">
+                <input type="text" placeholder="Search users or messages..." oninput="searchUsers(this.value)">
+            </div>
+            <div class="chat-tabs">
+                <button class="chat-tab active" onclick="switchTab('private')">Private</button>
+                <button class="chat-tab" onclick="switchTab('groups')">Groups</button>
+            </div>
+            <button class="new-chat-btn" onclick="showNewChatModal()">
+                <span>+</span> New Chat
+            </button>
+            <div class="chat-list" id="chatList">
+                <!-- Chat items will be added here -->
+            </div>
+        </div>
+
+        <div class="chat-main">
+            <div class="chat-header">
+                <img src="default-profile.jpg" alt="Chat" id="chatProfilePic">
+                <div>
+                    <h3 id="chatName">Select a chat</h3>
+                    <p id="chatStatus">No chat selected</p>
+                </div>
+                <div class="chat-header-actions">
+                    <button onclick="exportCurrentChat()">Export Chat</button>
+                    <button onclick="document.getElementById('importChatInput').click()">Import Chat</button>
+                    <input type="file" 
+                           id="importChatInput" 
+                           accept=".json"
+                           onchange="importChat(event)">
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be added here -->
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator"></div>
+
+            <div class="chat-input">
+                <button onclick="toggleEmojiPicker()">😊</button>
+                <button id="voiceMessageBtn" onclick="toggleVoiceMessage(this)">🎤</button>
+                <input type="text" 
+                       id="messageInput" 
+                       placeholder="Type a message..." 
+                       oninput="handleTyping()"
+                       onkeyup="handleTypingDone()">
+                <input type="file" 
+                       id="fileInput" 
+                       accept="image/*,.pdf,.doc,.docx" 
+                       onchange="handleFileUpload(event)" 
+                       style="display: none;">
+                <button onclick="document.getElementById('fileInput').click()">📎</button>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Chat/Group Modal Template -->
+    <div id="newChatModal" style="display: none;">
+        <div class="modal-overlay" onclick="hideNewChatModal()"></div>
+        <div class="new-group-modal">
+            <h2 id="modalTitle">New Chat</h2>
+            <div class="search-bar">
+                <input type="text" 
+                       id="userSearchInput" 
+                       placeholder="Search users..." 
+                       oninput="searchModalUsers(this.value)">
+            </div>
+            <div class="user-list" id="userList">
+                <!-- Users will be added here -->
+            </div>
+            <div id="groupNameInput" style="display: none;">
+                <input type="text" 
+                       placeholder="Enter group name" 
+                       id="groupName" 
+                       class="form-input">
+            </div>
+            <div class="modal-buttons">
+                <button onclick="hideNewChatModal()" class="button secondary">Cancel</button>
+                <button onclick="createNewChat()" class="button primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add reaction picker template -->
+    <div id="reactionPicker" class="reaction-picker" style="display: none;">
+        <span onclick="addReaction(selectedMessageId, '👍')">👍</span>
+        <span onclick="addReaction(selectedMessageId, '❤️')">❤️</span>
+        <span onclick="addReaction(selectedMessageId, '😄')">😄</span>
+        <span onclick="addReaction(selectedMessageId, '😮')">😮</span>
+        <span onclick="addReaction(selectedMessageId, '😢')">😢</span>
+        <span onclick="addReaction(selectedMessageId, '👏')">👏</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker-element/1.11.3/index.js"></script>
+    <script src="js/chat.js"></script>
+    <script>
+        let typingTimer;
+        let selectedUsers = new Set();
+        let isCreatingGroup = false;
+        let currentChat = null;
+        let chats = [];
+        let isRecording = false;
+        let selectedMessageId = null;
+
+        // Initialize chat and load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load user's chats
+            chats = chat.loadUserChats();
+            if (chats.length === 0) {
+                // Add demo chats for new users
+                chats = [
+                    { 
+                        id: 1, 
+                        type: 'private', 
+                        name: 'Voice Acting Support', 
+                        email: 'support@lrhub.com',
+                        image: 'default-profile.jpg', 
+                        lastMessage: 'Welcome to LR Hub! How can we help you?' 
+                    }
+                ];
+            }
+            
+            renderChatList();
+            chat.updateUserStatus();
+        });
+
+        function renderChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+            
+            chats.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = `chat-item ${currentChat === chat.id ? 'active' : ''}`;
+                div.onclick = () => selectChat(chat);
+                div.innerHTML = `
+                    <img src="${chat.image}" alt="${chat.name}">
+                    <div class="chat-item-info">
+                        <div class="chat-item-name">${chat.name}</div>
+                        <div class="chat-item-preview">${chat.lastMessage}</div>
+                    </div>
+                    <div class="chat-item-status" data-user-email="${chat.email}"></div>
+                `;
+                chatList.appendChild(div);
+            });
+        }
+
+        function selectChat(selectedChat) {
+            currentChat = selectedChat.id;
+            document.getElementById('chatName').textContent = selectedChat.name;
+            document.getElementById('chatStatus').textContent = 
+                selectedChat.type === 'group' ? 'Group Chat' : 'Online';
+            document.getElementById('chatProfilePic').src = selectedChat.image;
+            renderChatList();
+            loadMessages(selectedChat);
+        }
+
+        function loadMessages(selectedChat) {
+            // Load chat history from localStorage
+            const chatHistory = JSON.parse(localStorage.getItem(
+                `chat_history_${chat.userEmail}_${selectedChat.email || selectedChat.id}`
+            ) || '[]');
+
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = '';
+            
+            chatHistory.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `message ${msg.from === chat.userEmail ? 'sent' : 'received'}`;
+                div.setAttribute('data-message-id', msg.id);
+                
+                if (msg.type === 'text') {
+                    div.innerHTML = `
+                        <div class="message-content">${msg.content}</div>
+                        <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                        <div class="message-actions">
+                            <button onclick="showReactionPicker('${msg.id}', event)">😊</button>
+                        </div>
+                        <div class="message-reactions"></div>
+                    `;
+                } else if (msg.type === 'voice') {
+                    div.innerHTML = `
+                        <audio controls src="${msg.content}"></audio>
+                        <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                        <div class="message-actions">
+                            <button onclick="showReactionPicker('${msg.id}', event)">😊</button>
+                        </div>
+                        <div class="message-reactions"></div>
+                    `;
+                } else if (msg.type === 'file') {
+                    if (msg.fileType.startsWith('image/')) {
+                        div.innerHTML = `
+                            <img src="${msg.content}" alt="Shared image">
+                            <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                            <div class="message-actions">
+                                <button onclick="showReactionPicker('${msg.id}', event)">😊</button>
+                            </div>
+                            <div class="message-reactions"></div>
+                        `;
+                    } else {
+                        div.innerHTML = `
+                            <div class="file-attachment">
+                                <span class="file-icon">📎</span>
+                                <span class="file-name">${msg.fileName}</span>
+                                <span class="file-size">${msg.fileSize}</span>
+                            </div>
+                            <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                            <div class="message-actions">
+                                <button onclick="showReactionPicker('${msg.id}', event)">😊</button>
+                            </div>
+                            <div class="message-reactions"></div>
+                        `;
+                    }
+                }
+                
+                messagesContainer.appendChild(div);
+            });
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            if (!currentChat) return;
+
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                const message = {
+                    type: 'text',
+                    content: text,
+                    from: chat.userEmail,
+                    to: currentChat.email || currentChat.id,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Save to chat history
+                const chatKey = `chat_history_${chat.userEmail}_${currentChat.email || currentChat.id}`;
+                const chatHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
+                chatHistory.push(message);
+                localStorage.setItem(chatKey, JSON.stringify(chatHistory));
+
+                // Update UI
+                const messagesContainer = document.getElementById('chatMessages');
+                const div = document.createElement('div');
+                div.className = 'message sent';
+                div.innerHTML = `
+                    <div class="message-content">${text}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                    <div class="message-actions">
+                        <button onclick="showReactionPicker('${message.id}', event)">😊</button>
+                    </div>
+                    <div class="message-reactions"></div>
+                `;
+                messagesContainer.appendChild(div);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                input.value = '';
+
+                // Update last message in chat list
+                const chatIndex = chats.findIndex(c => c.id === currentChat.id);
+                if (chatIndex !== -1) {
+                    chats[chatIndex].lastMessage = text;
+                    renderChatList();
+                }
+            }
+        }
+
+        function toggleVoiceMessage(button) {
+            if (!isRecording) {
+                chat.startVoiceMessage().then(success => {
+                    if (success) {
+                        isRecording = true;
+                        button.style.color = 'red';
+                        button.style.animation = 'pulse 1.5s infinite';
+                    }
+                });
+            } else {
+                chat.stopVoiceMessage();
+                isRecording = false;
+                button.style.color = '';
+                button.style.animation = '';
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                chat.handleFileUpload(file);
+            }
+        }
+
+        // Add notification when receiving a new message
+        function receiveMessage(message) {
+            chat.addNotification(`New message from ${currentChat.name}: ${message}`, 'message');
+        }
+
+        function createNewChat() {
+            // Implement new chat creation
+            alert('Create new chat functionality will be implemented here');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            // Filter chats based on tab
+            renderChatList();
+        }
+
+        function handleTyping() {
+            if (currentChat) {
+                chat.setTyping(currentChat.id, true);
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => handleTypingDone(), 1000);
+            }
+        }
+
+        function handleTypingDone() {
+            if (currentChat) {
+                clearTimeout(typingTimer);
+                chat.setTyping(currentChat.id, false);
+            }
+        }
+
+        function searchUsers(query) {
+            if (query.length < 2) return;
+            
+            const results = chat.searchUsers(query);
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+            
+            results.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'chat-item';
+                div.onclick = () => startChat(user);
+                div.innerHTML = `
+                    <img src="default-profile.jpg" alt="${user.fullName}">
+                    <div class="chat-item-info">
+                        <div class="chat-item-name">${user.fullName}</div>
+                        <div class="chat-item-preview">${user.email}</div>
+                    </div>
+                    <div class="chat-item-status" data-user-email="${user.email}"></div>
+                `;
+                chatList.appendChild(div);
+            });
+        }
+
+        function showNewChatModal(isGroup = false) {
+            isCreatingGroup = isGroup;
+            document.getElementById('modalTitle').textContent = isGroup ? 'New Group' : 'New Chat';
+            document.getElementById('groupNameInput').style.display = isGroup ? 'block' : 'none';
+            document.getElementById('newChatModal').style.display = 'block';
+            selectedUsers.clear();
+            searchModalUsers('');
+        }
+
+        function hideNewChatModal() {
+            document.getElementById('newChatModal').style.display = 'none';
+        }
+
+        function searchModalUsers(query) {
+            const results = chat.searchUsers(query);
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            
+            results.forEach(user => {
+                const div = document.createElement('div');
+                div.className = `user-item ${selectedUsers.has(user.email) ? 'selected' : ''}`;
+                div.onclick = () => toggleUserSelection(user);
+                div.innerHTML = `
+                    <img src="default-profile.jpg" alt="${user.fullName}">
+                    <div>
+                        <div class="user-name">${user.fullName}</div>
+                        <div class="user-email">${user.email}</div>
+                    </div>
+                `;
+                userList.appendChild(div);
+            });
+        }
+
+        function toggleUserSelection(user) {
+            if (selectedUsers.has(user.email)) {
+                selectedUsers.delete(user.email);
+            } else {
+                if (!isCreatingGroup && selectedUsers.size >= 1) {
+                    alert('Select only one user for private chat');
+                    return;
+                }
+                selectedUsers.add(user.email);
+            }
+            searchModalUsers(document.getElementById('userSearchInput').value);
+        }
+
+        function createNewChat() {
+            if (selectedUsers.size === 0) {
+                alert('Please select at least one user');
+                return;
+            }
+
+            if (isCreatingGroup) {
+                const groupName = document.getElementById('groupName').value.trim();
+                if (!groupName) {
+                    alert('Please enter a group name');
+                    return;
+                }
+                const group = chat.createGroup(groupName, Array.from(selectedUsers));
+                selectChat(group);
+            } else {
+                const userEmail = Array.from(selectedUsers)[0];
+                const user = chat.loadAllUsers().find(u => u.email === userEmail);
+                startChat(user);
+            }
+
+            hideNewChatModal();
+        }
+
+        function showReactionPicker(messageId, event) {
+            const picker = document.getElementById('reactionPicker');
+            selectedMessageId = messageId;
+            
+            // Position picker near click
+            picker.style.left = `${event.clientX}px`;
+            picker.style.top = `${event.clientY}px`;
+            picker.style.display = 'flex';
+            
+            // Close picker when clicking outside
+            document.addEventListener('click', hideReactionPicker);
+            event.stopPropagation();
+        }
+
+        function hideReactionPicker() {
+            document.getElementById('reactionPicker').style.display = 'none';
+            document.removeEventListener('click', hideReactionPicker);
+        }
+
+        function addReaction(messageId, reaction) {
+            chat.addReaction(messageId, reaction);
+            hideReactionPicker();
+        }
+
+        function toggleReaction(messageId, reaction) {
+            const messageKey = `reactions_${messageId}`;
+            const reactions = JSON.parse(localStorage.getItem(messageKey) || '[]');
+            const hasReacted = reactions.some(r => r.by === chat.userEmail && r.reaction === reaction);
+            
+            if (hasReacted) {
+                chat.removeReaction(messageId);
+            } else {
+                chat.addReaction(messageId, reaction);
+            }
+        }
+
+        function exportCurrentChat() {
+            if (!currentChat) {
+                alert('Please select a chat to export');
+                return;
+            }
+            chat.exportChat(currentChat.id);
+        }
+
+        async function importChat(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const importedChat = await chat.importChat(file);
+                if (importedChat) {
+                    alert('Chat imported successfully!');
+                    loadChats();
+                }
+            } catch (error) {
+                alert('Failed to import chat: ' + error.message);
+            }
+            event.target.value = ''; // Reset file input
+        }
+
+        // Initialize
+        loadChats();
+
+        // Handle enter key in message input
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

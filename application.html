@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application | Lucid Realms Studios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">LR</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="job-listings.html">Job Listings</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="blog.html">Blog/Resources</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><button onclick="window.location.href='login.html'">Login</button></li>
+                <li><button onclick="window.location.href='signup.html'" class="signup-btn">Sign Up</button></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Submit Your Audition</h2>
+        <form id="applicationForm" action="/submit-application" method="post" enctype="multipart/form-data">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone Number (optional):</label>
+            <input type="tel" id="phone" name="phone">
+
+            <label for="voiceSample">Upload Voice Sample:</label>
+            <input type="file" id="voiceSample" name="voiceSample" accept="audio/*" required>
+
+            <label for="notes">Additional Notes:</label>
+            <textarea id="notes" name="notes" rows="4"></textarea>
+
+            <button type="submit">Submit Application</button>
+        </form>
+    </main>
+    <footer>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="job-listings.html">Job Listings</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="blog.html">Blog/Resources</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+        <div class="social-icons">
+            <a href="#"><img src="images/discord-icon.png" alt="Discord"></a>
+            <a href="#"><img src="images/youtube-icon.png" alt="YouTube"></a>
+            <a href="#"><img src="images/twitter-icon.png" alt="Twitter"></a>
+        </div>
+        <button onclick="window.open('https://discord.gg/voiceact', '_blank')">Join Our Discord</button>
+        <p> 2024 Lucid Realms Studios. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LR Hub</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-color);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dashboard-container {
+            margin-top: 70px;
+            padding: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
+            border-radius: 15px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('assets/wave-pattern.png');
+            opacity: 0.1;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-card label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .main-widget {
+            grid-column: span 2;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .quick-action-btn i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .visualizer-container {
+            position: relative;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .recording-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #dc3545;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .main-widget {
+                grid-column: span 1;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .primary-btn {
+            background: white;
+            color: var(--button-color);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .voice-samples {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .voice-sample {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .voice-sample-title {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .voice-sample audio {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .sample-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .projects-list {
+            padding: 20px;
+        }
+
+        .project-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .project-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--text-color);
+        }
+
+        .project-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .project-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-in-progress {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .opportunities-list {
+            padding: 20px;
+        }
+
+        .opportunity-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .opportunity-item:last-child {
+            border-bottom: none;
+        }
+
+        .opportunity-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--text-color);
+        }
+
+        .opportunity-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .footer {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            background: var(--bg-secondary);
+        }
+
+        .discord-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #5865F2;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+        }
+
+        .discord-btn i {
+            font-size: 20px;
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+        }
+
+        .profile-menu img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #2563eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-menu img:hover {
+            transform: scale(1.05);
+        }
+
+        #menuProfileImage {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="home.html" class="logo">LR Hub</a>
+        </div>
+    </nav>
+
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <img id="menuProfileImage" src="assets/default-avatar.png" alt="Profile">
+            <div class="user-info">
+                <p id="menuProfileName" class="user-name">Loading...</p>
+                <p class="user-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="userLocation">Loading...</span>
+                </p>
+            </div>
+        </div>
+        <div class="menu-items">
+            <a href="home.html" class="menu-item">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="find-work.html" class="menu-item">
+                <i class="fas fa-search"></i> Find Work
+            </a>
+            <div id="postProjectLink" style="display: none;">
+                <a href="post-project.html" class="menu-item">
+                    <i class="fas fa-plus-circle"></i> Post Project
+                </a>
+            </div>
+            <a href="view-users.html" class="menu-item">
+                <i class="fas fa-user-friends"></i> View Others
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <a href="#" class="menu-item" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="welcome-banner">
+            <div class="banner-content">
+                <h1>Welcome back, <span id="welcomeName">Voice Artist</span>!</h1>
+                <p>Ready to bring characters to life?</p>
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-microphone"></i>
+                        <span id="totalRecordings">0</span>
+                        <label>Voice Samples</label>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-project-diagram"></i>
+                        <span id="activeProjects">0</span>
+                        <label>Active Projects</label>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <span id="rating">5.0</span>
+                        <label>Rating</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Voice Recording Widget -->
+            <div class="dashboard-widget main-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Voice Studio</h3>
+                    <button id="recordBtn" class="action-btn primary-btn">
+                        <i class="fas fa-microphone"></i> New Recording
+                    </button>
+                </div>
+                <div class="voice-recorder-container">
+                    <div id="recordingUI" style="display: none;">
+                        <div class="visualizer-container">
+                            <canvas id="audioVisualizer"></canvas>
+                            <div class="recording-indicator">
+                                <span class="pulse"></span>
+                                Recording...
+                            </div>
+                        </div>
+                        <div class="recording-controls">
+                            <div class="timer" id="recordingTimer">00:00</div>
+                            <button id="stopBtn" class="action-btn delete-btn">
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                    <div class="voice-samples" id="voiceSamplesList">
+                        <!-- Voice samples will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Overview -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Current Projects</h3>
+                    <button class="action-btn secondary-btn" onclick="viewAllProjects()">
+                        View All
+                    </button>
+                </div>
+                <div class="projects-list">
+                    <!-- Projects will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Opportunities -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">New Opportunities</h3>
+                    <button class="action-btn secondary-btn" onclick="viewAllOpportunities()">
+                        Browse All
+                    </button>
+                </div>
+                <div class="opportunities-list">
+                    <!-- Opportunities will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="window.location.href='profile-setup.html'">
+                        <i class="fas fa-user-edit"></i>
+                        Edit Profile
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='#'">
+                        <i class="fas fa-search"></i>
+                        Find Work
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='#'">
+                        <i class="fas fa-book"></i>
+                        Voice Library
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='#'">
+                        <i class="fas fa-comments"></i>
+                        Community
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="support.html" class="footer-link">
+                <i class="fas fa-headset"></i>
+                Support
+            </a>
+            <a href="https://discord.gg/windsurf" target="_blank" class="discord-btn">
+                <i class="fab fa-discord"></i>
+                Join our Discord
+            </a>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+        }
+
+        function signOut() {
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'auth.html';
+        }
+
+        function updateProfileImages() {
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            const profileImage = userProfile.profilePicture || 'assets/default-avatar.png';
+            
+            document.getElementById('headerProfileImage').src = profileImage;
+            document.getElementById('menuProfileImage').src = profileImage;
+            document.getElementById('menuProfileName').textContent = userProfile.name || 'Guest User';
+            document.getElementById('menuProfileEmail').textContent = localStorage.getItem('userEmail') || 'No email';
+        }
+
+        // Update profile images when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProfileImages();
+        });
+
+        function toggleProfileMenu() {
+            // Add functionality to toggle profile menu
+        }
+
+        function editProfile() {
+            window.location.href = 'profile-setup.html';
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize dashboard functionality
+        });
+
+        function setupVoiceRecorder() {
+            const recordBtn = document.getElementById('recordBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const recordingUI = document.getElementById('recordingUI');
+            const timerDisplay = document.getElementById('recordingTimer');
+            
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let startTime;
+            let timerInterval;
+
+            recordBtn.addEventListener('click', async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        addVoiceSample(audioUrl);
+                        clearInterval(timerInterval);
+                        timerDisplay.textContent = '00:00';
+                    };
+
+                    mediaRecorder.start();
+                    startTime = Date.now();
+                    timerInterval = setInterval(updateTimer, 1000);
+                    
+                    recordingUI.style.display = 'block';
+                    recordBtn.style.display = 'none';
+                    startVisualizer(stream);
+
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('Unable to access microphone. Please ensure you have granted microphone permissions.');
+                }
+            });
+
+            stopBtn.addEventListener('click', () => {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    recordingUI.style.display = 'none';
+                    recordBtn.style.display = 'block';
+                }
+            });
+
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                timerDisplay.textContent = `${minutes}:${seconds}`;
+            }
+        }
+
+        function addVoiceSample(audioUrl) {
+            const samplesList = document.getElementById('voiceSamplesList');
+            const sample = document.createElement('div');
+            sample.className = 'voice-sample';
+            sample.innerHTML = `
+                <h4 class="voice-sample-title">Voice Sample ${new Date().toLocaleString()}</h4>
+                <audio controls src="${audioUrl}"></audio>
+                <div class="sample-controls">
+                    <button class="action-btn secondary-btn" onclick="downloadSample(this)">Download</button>
+                    <button class="action-btn delete-btn" onclick="deleteSample(this)">Delete</button>
+                </div>
+            `;
+            samplesList.prepend(sample);
+            updateSampleCount();
+        }
+
+        function startVisualizer(stream) {
+            const canvas = document.getElementById('audioVisualizer');
+            const canvasCtx = canvas.getContext('2d');
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            
+            source.connect(analyser);
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                const WIDTH = canvas.width;
+                const HEIGHT = canvas.height;
+
+                requestAnimationFrame(draw);
+
+                analyser.getByteTimeDomainData(dataArray);
+
+                canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+                canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+                canvasCtx.beginPath();
+
+                const sliceWidth = WIDTH * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * HEIGHT/2;
+
+                    if (i === 0) {
+                        canvasCtx.moveTo(x, y);
+                    } else {
+                        canvasCtx.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                canvasCtx.lineTo(canvas.width, canvas.height/2);
+                canvasCtx.stroke();
+            }
+
+            draw();
+        }
+
+        function downloadSample(btn) {
+            const audio = btn.parentElement.parentElement.querySelector('audio');
+            const link = document.createElement('a');
+            link.href = audio.src;
+            link.download = `voice_sample_${new Date().toISOString()}.webm`;
+            link.click();
+        }
+
+        function deleteSample(btn) {
+            const sample = btn.parentElement.parentElement;
+            sample.remove();
+            updateSampleCount();
+        }
+
+        function updateSampleCount() {
+            const count = document.querySelectorAll('.voice-sample').length;
+            document.getElementById('sampleCount').textContent = count;
+        }
+
+        // Initialize voice recorder when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setupVoiceRecorder();
+        });
+    </script>
+    <script src="js/navigation.js"></script>
+</body>
+</html>

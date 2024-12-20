@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+    <!-- LR Hub Logo -->
+    <style>
+        .text { font-family: Arial, sans-serif; font-weight: bold; }
+        .primary { fill: #00CED1; }
+        .secondary { fill: #000080; }
+    </style>
+    
+    <!-- Microphone Icon -->
+    <circle cx="20" cy="20" r="15" class="primary" />
+    <path d="M20 10 v20 M15 15 h10" class="secondary" stroke-width="2" />
+    
+    <!-- Text -->
+    <text x="40" y="25" class="text primary" font-size="20">LR Hub</text>
+</svg>

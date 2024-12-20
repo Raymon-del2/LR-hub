@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - LR Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00CED1;
+            --text-color: #333;
+            --button-color: #000080;
+            /* Light Theme (Default) */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-color: #333333;
+            --primary-color: #00BCD4;
+            --border-color: #dddddd;
+            --input-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-color: #ffffff;
+            --primary-color: #00BCD4;
+            --border-color: #404040;
+            --input-bg: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --modal-bg: rgba(0, 0, 0, 0.9);
+        }
+
+        [data-theme="colorful"] {
+            --bg-primary: #2c3e50;
+            --bg-secondary: #34495e;
+            --text-color: #ecf0f1;
+            --primary-color: #e74c3c;
+            --border-color: #3498db;
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(41, 128, 185, 0.3);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .profile-setup-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-picture-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-picture-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 1rem auto;
+            border: 3px solid var(--primary-color);
+            object-fit: cover;
+            display: none;
+        }
+
+        .profile-picture-upload {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #000066;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .interests-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .interest-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #000066;
+        }
+
+        .error-message {
+            color: #ef4444;
+            padding: 0.5rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .lava-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .lava-lamp {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(20px);
+            animation: float 8s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(50px, 50px); }
+            50% { transform: translate(0, 100px); }
+            75% { transform: translate(-50px, 50px); }
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .theme-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .theme-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .theme-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-option input:checked + .theme-preview::before {
+            opacity: 0.2;
+        }
+
+        .theme-preview.light-preview {
+            background: #ffffff;
+            color: #333333;
+            border: 2px solid #dddddd;
+        }
+
+        .theme-preview.dark-preview {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: 2px solid #404040;
+        }
+
+        .theme-preview.colorful-preview {
+            background: linear-gradient(45deg, #2c3e50, #e74c3c, #3498db);
+            color: #ffffff;
+        }
+
+        .theme-option:hover .theme-preview {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="lava-background" id="lavaBackground"></div>
+
+    <div class="profile-setup-container">
+        <h1>Complete Your Profile</h1>
+        <p>Let's set up your profile so others can get to know you better.</p>
+
+        <form id="profileForm">
+            <div class="profile-picture-section">
+                <img id="profilePreview" src="assets/default-avatar.png" alt="Profile Picture" class="profile-picture-preview" style="display: block;">
+                <input type="file" id="profilePicture" class="profile-picture-upload" accept="image/*">
+                <label for="profilePicture" class="upload-btn">
+                    <i class="fas fa-camera"></i> Choose Profile Picture
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Display Name</label>
+                <input type="text" id="name" required placeholder="How should we call you?">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" placeholder="Tell us a bit about yourself..."></textarea>
+            </div>
+
+            <div class="interests-section">
+                <label>Interests</label>
+                <div class="interests-grid">
+                    <div class="interest-item">
+                        <input type="checkbox" id="voice-acting" name="interests" value="voice-acting">
+                        <label for="voice-acting">Voice Acting</label>
+                    </div>
+                    <div class="interest-item">
+                        <input type="checkbox" id="animation" name="interests" value="animation">
+                        <label for="animation">Animation</label>
+                    </div>
+                    <div class="interest-item">
+                        <input type="checkbox" id="gaming" name="interests" value="gaming">
+                        <label for="gaming">Gaming</label>
+                    </div>
+                    <div class="interest-item">
+                        <input type="checkbox" id="music" name="interests" value="music">
+                        <label for="music">Music</label>
+                    </div>
+                    <div class="interest-item">
+                        <input type="checkbox" id="storytelling" name="interests" value="storytelling">
+                        <label for="storytelling">Storytelling</label>
+                    </div>
+                    <div class="interest-item">
+                        <input type="checkbox" id="audio-production" name="interests" value="audio-production">
+                        <label for="audio-production">Audio Production</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Complete Profile</button>
+        </form>
+    </div>
+
+    <!-- Theme Selection -->
+    <div class="theme-options">
+        <label class="theme-option">
+            <input type="radio" name="theme" value="light" checked>
+            <span class="theme-preview light-preview">Light</span>
+        </label>
+        <label class="theme-option">
+            <input type="radio" name="theme" value="dark">
+            <span class="theme-preview dark-preview">Dark</span>
+        </label>
+        <label class="theme-option">
+            <input type="radio" name="theme" value="colorful">
+            <span class="theme-preview colorful-preview">Colorful</span>
+        </label>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/profile-setup.js"></script>
+    <script>
+        // Create lava lamp effect
+        function createLavaLamp() {
+            const background = document.getElementById('lavaBackground');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96c93d', '#e056fd'];
+            
+            for (let i = 0; i < 5; i++) {
+                const lamp = document.createElement('div');
+                lamp.className = 'lava-lamp';
+                lamp.style.width = Math.random() * 200 + 100 + 'px';
+                lamp.style.height = lamp.style.width;
+                lamp.style.background = colors[i];
+                lamp.style.left = Math.random() * 100 + '%';
+                lamp.style.top = Math.random() * 100 + '%';
+                lamp.style.animationDelay = Math.random() * 5 + 's';
+                background.appendChild(lamp);
+            }
+        }
+
+        createLavaLamp();
+
+        // Add camera and preview functions
+        let stream = null;
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    updateProfilePreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateProfilePreview(src) {
+            const preview = document.getElementById('profilePreview');
+            const placeholder = document.querySelector('.placeholder');
+            
+            if (src) {
+                preview.src = src;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+        }
+
+        async function openCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "user"
+                    } 
+                });
+
+                // Create video element
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                // Wait for video to be ready
+                video.onloadedmetadata = () => {
+                    // Create canvas for snapshot
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Take photo after 3 seconds
+                    setTimeout(() => {
+                        // Draw video frame to canvas
+                        canvas.getContext('2d').drawImage(video, 0, 0);
+                        
+                        // Convert to image and display
+                        const preview = document.getElementById('profilePreview');
+                        const placeholder = document.querySelector('.placeholder');
+                        preview.src = canvas.toDataURL('image/jpeg');
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+
+                        // Stop camera
+                        stream.getTracks().forEach(track => track.stop());
+                    }, 3000);
+
+                    // Add countdown display
+                    let countdown = 3;
+                    const countdownInterval = setInterval(() => {
+                        if (countdown > 0) {
+                            alert(`Taking photo in ${countdown}...`);
+                            countdown--;
+                        } else {
+                            clearInterval(countdownInterval);
+                        }
+                    }, 1000);
+                };
+
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Unable to access camera. Please ensure you have granted camera permissions.');
+            }
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('profilePreview');
+            const placeholder = document.querySelector('.placeholder');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function completeProfile() {
+            // Get all profile data
+            const name = document.getElementById('name').value;
+            const bio = document.getElementById('bio').value;
+            
+            // Get selected interests
+            const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            // Get profile picture
+            const profileImg = document.getElementById('profilePreview');
+            const profilePicture = profileImg.style.display !== 'none' ? profileImg.src : null;
+
+            // Create profile object
+            const profile = {
+                name,
+                bio,
+                interests,
+                profilePicture,
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
+        }
+
+        // Theme functions
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+                const themeInput = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+                if (themeInput) {
+                    themeInput.checked = true;
+                }
+            }
+        });
+
+        // Theme change event listeners
+        document.querySelectorAll('input[name="theme"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                setTheme(e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>

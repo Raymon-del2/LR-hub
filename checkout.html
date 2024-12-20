@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - LR Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .checkout-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .checkout-form {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-summary {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .plan-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .plan-option.selected {
+            border-color: var(--primary-color);
+            background: var(--bg-secondary);
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .period {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .total {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .features-list {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .features-list li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .features-list li i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="checkout-grid">
+            <div class="checkout-form">
+                <h2>Choose Your Plan</h2>
+                <div class="plan-options">
+                    <div class="plan-option selected" onclick="selectPlan(this, 'monthly')">
+                        <h3>Monthly</h3>
+                        <div class="price">$9.99</div>
+                        <div class="period">per month</div>
+                    </div>
+                    <div class="plan-option" onclick="selectPlan(this, 'yearly')">
+                        <h3>Yearly</h3>
+                        <div class="price">$99.99</div>
+                        <div class="period">per year</div>
+                        <div class="savings">Save 17%</div>
+                    </div>
+                </div>
+
+                <h3>Payment Information</h3>
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label for="cardName">Name on Card</label>
+                        <input type="text" id="cardName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                    </div>
+                    <div class="card-grid">
+                        <div class="form-group">
+                            <label for="expiryDate">Expiry Date</label>
+                            <input type="text" id="expiryDate" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-item">
+                    <span>Premium Plan (Monthly)</span>
+                    <span>$9.99</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total</span>
+                    <span>$9.99</span>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i>Priority Support</li>
+                    <li><i class="fas fa-check"></i>Unlimited Projects</li>
+                    <li><i class="fas fa-check"></i>Advanced Analytics</li>
+                    <li><i class="fas fa-check"></i>Premium Badge</li>
+                    <li><i class="fas fa-check"></i>Early Access to Features</li>
+                </ul>
+
+                <button class="checkout-btn" onclick="processPayment()">Complete Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        function selectPlan(element, plan) {
+            // Remove selected class from all options
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+
+            // Update order summary
+            const summaryPrice = document.querySelector('.summary-item span:last-child');
+            const totalPrice = document.querySelector('.total span:last-child');
+            const planName = document.querySelector('.summary-item span:first-child');
+
+            if (plan === 'monthly') {
+                summaryPrice.textContent = '$9.99';
+                totalPrice.textContent = '$9.99';
+                planName.textContent = 'Premium Plan (Monthly)';
+            } else {
+                summaryPrice.textContent = '$99.99';
+                totalPrice.textContent = '$99.99';
+                planName.textContent = 'Premium Plan (Yearly)';
+            }
+        }
+
+        function processPayment() {
+            // Here you would integrate with a payment processor
+            // For now, we'll just show a success message and redirect
+            alert('Payment processed successfully! Redirecting to settings...');
+            window.location.href = 'settings.html?subscription=success';
+        }
+
+        // Format card number input
+        document.getElementById('cardNumber').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = value;
+        });
+
+        // Format expiry date input
+        document.getElementById('expiryDate').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Limit CVV to 3 or 4 digits
+        document.getElementById('cvv').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value.slice(0, 4);
+        });
+    </script>
+</body>
+</html>

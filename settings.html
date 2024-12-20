@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - LR Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-accent: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-primary: #1e293b;
+            --bg-secondary: #0f172a;
+            --bg-accent: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+
+        .theme-transition {
+            transition: none;
+            animation: theme-shatter 0.5s ease-out;
+        }
+
+        @keyframes theme-shatter {
+            0% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+            15% {
+                clip-path: polygon(10% 0, 90% 5%, 85% 95%, 15% 100%);
+            }
+            30% {
+                clip-path: polygon(20% 10%, 80% 15%, 75% 85%, 25% 90%);
+            }
+            45% {
+                clip-path: polygon(30% 20%, 70% 25%, 65% 75%, 35% 80%);
+            }
+            60% {
+                clip-path: polygon(40% 30%, 60% 35%, 55% 65%, 45% 70%);
+            }
+            75% {
+                clip-path: polygon(45% 40%, 55% 45%, 50% 55%, 48% 60%);
+            }
+            100% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .settings-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            padding: 1rem;
+            background: var(--bg-accent);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .section-header:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .color-theme-preview {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .theme-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: black;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .learn-more {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--primary-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        /* Profile Settings Styles */
+        .profile-settings {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            padding: 1.5rem;
+        }
+
+        .profile-picture {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .picture-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-picture:hover .picture-overlay {
+            opacity: 1;
+        }
+
+        .upload-btn {
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn i {
+            font-size: 1.2rem;
+        }
+
+        .profile-form {
+            flex: 1;
+        }
+
+        .save-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .save-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .profile-settings {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .profile-picture {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="home.html" class="logo">LR Hub</a>
+        </div>
+        <div id="sideMenu" class="side-menu">
+            <!-- Side menu content -->
+        </div>
+    </nav>
+
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>Customize Your Experience</h1>
+            <p>Personalize LR Hub to match your preferences and workflow</p>
+        </div>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-crown"></i> Premium Features</h2>
+            <div class="premium-features">
+                <div class="feature-card">
+                    <i class="fas fa-star feature-icon"></i>
+                    <h3>Priority Support</h3>
+                    <p>Get faster responses from our support team</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-project-diagram feature-icon"></i>
+                    <h3>Unlimited Projects</h3>
+                    <p>Post as many projects as you want</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3>Analytics</h3>
+                    <p>Detailed insights about your projects</p>
+                </div>
+            </div>
+            <button class="upgrade-btn" onclick="window.location.href='checkout.html'">Upgrade to Premium</button>
+            <a href="#" class="learn-more" onclick="openLearnMore()">Learn More</a>
+        </div>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-user"></i> Profile Settings</h2>
+            <div class="profile-settings">
+                <div class="profile-picture">
+                    <img src="" alt="Profile Picture" id="profilePreview" class="profile-pic">
+                    <div class="picture-overlay">
+                        <label for="profilePicture" class="upload-btn">
+                            <i class="fas fa-camera"></i>
+                            Change Picture
+                        </label>
+                        <input type="file" id="profilePicture" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <div class="profile-form">
+                    <div class="form-group">
+                        <label for="displayName">Display Name</label>
+                        <input type="text" id="displayName" placeholder="Enter your display name">
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" placeholder="Tell us about yourself" rows="4"></textarea>
+                    </div>
+                    <button class="save-btn" onclick="saveProfileChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user"></i> Account Settings</h2>
+            </div>
+            <div id="account" class="section-content active">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Change Password</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <div class="form-group">
+                    <label>Two-Factor Authentication</label>
+                    <div class="twofa-status">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Enabled for your security</span>
+                    </div>
+                    <div class="twofa-info">
+                        <p>Two-factor authentication is required for all accounts to ensure maximum security.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-id-card"></i> Profile Visibility</h2>
+            </div>
+            <div id="profile" class="section-content active">
+                <div class="form-group">
+                    <label>Profile Status</label>
+                    <div class="profile-status">
+                        <div class="status-indicator public">
+                            <i class="fas fa-eye"></i>
+                            <span>Public Profile</span>
+                        </div>
+                        <button class="upgrade-btn" onclick="window.location.href='checkout.html?plan=private'">
+                            <i class="fas fa-crown"></i>
+                            Upgrade to Private Profile
+                        </button>
+                    </div>
+                    <p class="upgrade-info">
+                        Private profiles are available with our premium subscription. 
+                        <a href="checkout.html?plan=private">Learn more</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-palette"></i> Theme Settings</h2>
+            </div>
+            <div id="theme" class="section-content active">
+                <div class="form-group">
+                    <label>Color Theme</label>
+                    <div class="color-theme-preview">
+                        <div class="color-option active" style="background: #2563eb" data-color="#2563eb"></div>
+                        <div class="color-option" style="background: #10B981" data-color="#10B981"></div>
+                        <div class="color-option" style="background: #7C3AED" data-color="#7C3AED"></div>
+                        <div class="color-option" style="background: #EF4444" data-color="#EF4444"></div>
+                        <div class="color-option" style="background: #F59E0B" data-color="#F59E0B"></div>
+                    </div>
+                    <div class="theme-preview">Theme Preview</div>
+                </div>
+                <div class="form-group">
+                    <label>Dark Mode</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="darkMode">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-desktop"></i> Display Settings</h2>
+            </div>
+            <div id="display" class="section-content">
+                <div class="form-group">
+                    <label for="font-size">Font Size</label>
+                    <select id="font-size">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Enable Animations</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="animations">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> Notification Settings</h2>
+            </div>
+            <div id="notifications" class="section-content">
+                <div class="form-group">
+                    <label>Email Notifications</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="email-notifications">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Push Notifications</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="push-notifications">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Sound Alerts</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sound-alerts">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+            </div>
+            <div id="privacy" class="section-content">
+                <div class="form-group">
+                    <label>Public Profile</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="public-profile">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="danger-zone">
+                    <h4>Danger Zone</h4>
+                    <p>Once you delete your account, there is no going back. Please be certain.</p>
+                    <button class="btn-save btn-danger" onclick="confirmDelete()">Delete Account</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-footer">
+            <div class="footer-links">
+                <a href="support.html">
+                    <i class="fas fa-headset"></i>
+                    Support
+                </a>
+                <a href="https://discord.gg/lrhub" target="_blank">
+                    <i class="fab fa-discord"></i>
+                    Join Discord
+                </a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Learn More Modal -->
+    <div id="learnMoreModal" class="modal">
+        <div class="modal-content">
+            <h2>Premium Features</h2>
+            <ul>
+                <li><strong>Priority Support:</strong> Get personalized support within 24 hours</li>
+                <li><strong>Unlimited Projects:</strong> No restrictions on the number of projects you can post</li>
+                <li><strong>Advanced Analytics:</strong> Track your project performance and engagement</li>
+                <li><strong>Custom Profile Badge:</strong> Stand out with a premium badge on your profile</li>
+                <li><strong>Early Access:</strong> Be the first to try new features</li>
+            </ul>
+            <button class="upgrade-btn" onclick="window.location.href='checkout.html'">Get Started Now</button>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        function openLearnMore() {
+            document.getElementById('learnMoreModal').style.display = 'flex';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script src="js/script.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let currentColor = localStorage.getItem('primaryColor') || '#2563eb';
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.classList.add('theme-transition');
+            setTimeout(() => {
+                document.documentElement.classList.remove('theme-transition');
+            }, 500);
+        }
+
+        function setPrimaryColor(color) {
+            currentColor = color;
+            document.documentElement.style.setProperty('--primary-color', color);
+            document.documentElement.style.setProperty('--primary-hover', adjustColor(color, -20));
+            
+            // Update active state of color options
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.toggle('active', option.dataset.color === color);
+            });
+
+            // Update theme preview
+            const preview = document.querySelector('.theme-preview');
+            preview.style.backgroundColor = color;
+            preview.style.color = isLightColor(color) ? '#1e293b' : '#ffffff';
+        }
+
+        function adjustColor(color, amount) {
+            const hex = color.replace('#', '');
+            const num = parseInt(hex, 16);
+            const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+            const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+            const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+            return `#${(b | (g << 8) | (r << 16)).toString(16).padStart(6, '0')}`;
+        }
+
+        function isLightColor(color) {
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128;
+        }
+
+        // Initialize theme and color
+        setTheme(currentTheme);
+        setPrimaryColor(currentColor);
+
+        // Event listeners
+        document.getElementById('darkMode').addEventListener('change', (e) => {
+            setTheme(e.target.checked ? 'dark' : 'light');
+        });
+
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                setPrimaryColor(option.dataset.color);
+            });
+        });
+
+        // Update dark mode toggle based on current theme
+        document.getElementById('darkMode').checked = currentTheme === 'dark';
+
+        function saveSettings() {
+            const settings = {};
+            const inputs = document.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                if (input.id) {
+                    settings[input.id] = input.type === 'checkbox' ? input.checked : input.value;
+                }
+            });
+
+            // Save theme settings
+            localStorage.setItem('theme', currentTheme);
+            localStorage.setItem('primaryColor', currentColor);
+            localStorage.setItem('settings', JSON.stringify(settings));
+            
+            showToast('Settings saved successfully!');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.fa-chevron-down');
+            
+            content.classList.toggle('active');
+            icon.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+        }
+
+        function loadSettings() {
+            // Load saved settings from localStorage
+            const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+            
+            // Apply settings to form elements
+            for (const [key, value] of Object.entries(settings)) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = value;
+                    } else {
+                        element.value = value;
+                    }
+                }
+            }
+        }
+
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                // Implement account deletion logic here
+                localStorage.removeItem('userProfile');
+                localStorage.removeItem('settings');
+                window.location.href = 'auth.html';
+            }
+        }
+
+        function saveProfileChanges() {
+            const displayName = document.getElementById('displayName').value;
+            const bio = document.getElementById('bio').value;
+            const profilePicture = document.getElementById('profilePreview').src;
+            
+            // Update auth data with new profile information
+            const updatedProfile = {
+                name: displayName,
+                bio: bio,
+                profilePicture: profilePicture
+            };
+
+            // Update profile using Auth class
+            Auth.updateProfile(updatedProfile);
+            
+            // Show success message
+            showToast('Profile updated successfully!');
+        }
+
+        // Handle profile picture change
+        document.getElementById('profilePicture').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    showToast('Image size should be less than 5MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profilePreview = document.getElementById('profilePreview');
+                    profilePreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load settings when page loads
+        document.addEventListener('DOMContentLoaded', loadSettings);
+
+        // Load existing profile data
+        function loadProfileData() {
+            const auth = Auth.getAuthData();
+            if (auth) {
+                document.getElementById('displayName').value = auth.name || '';
+                document.getElementById('bio').value = auth.bio || '';
+                const profilePreview = document.getElementById('profilePreview');
+                if (profilePreview) {
+                    profilePreview.src = auth.profilePicture || '';
+                }
+            }
+        }
+
+        // Load profile data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+        });
+    </script>
+</body>
+</html>

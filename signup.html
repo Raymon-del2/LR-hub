@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Free Voice Acting Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #ffecb3;
+        }
+        header, footer {
+            background-color: #ffa000;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase project configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBboMaGb8S-n1beaXqTmsbqp2BLAYTEcm8",
+                authDomain: "voices-d80ae.firebaseapp.com",
+                projectId: "voices-d80ae",
+                storageBucket: "voices-d80ae.appspot.com",
+                messagingSenderId: "1011135914162",
+                appId: "1:1011135914162:web:4daa1c538eb1f32d2769ab"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            // Set up Google Sign-In
+            const provider = new firebase.auth.GoogleAuthProvider();
+            window.signUpWithGoogle = function() {
+                firebase.auth().signInWithPopup(provider)
+                    .then((result) => {
+                        const token = result.credential.accessToken;
+                        const user = result.user;
+                        console.log('User signed in: ', user);
+                    }).catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.log('Error signing in: ', errorCode, errorMessage);
+                    });
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">FreeVA</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="job-listings.html">Job Listings</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Create Your Free Account</h2>
+        <form id="signupForm" action="/signup" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login</a></p>
+    </main>
+    <footer>
+        <p>&copy; 2024 Free Voice Acting Platform. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

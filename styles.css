@@ -1,0 +1,235 @@
+:root {
+    --primary-color: #00FFFF;
+    --button-color: #000080;
+    --text-color: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--primary-color);
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+header, footer {
+    background-color: #004d40;
+    color: white;
+}
+
+header a.logo {
+    color: #81c784;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.hero {
+    background-image: url('images/hero-bg.jpg');
+    background-size: cover;
+    color: #fff;
+    text-align: center;
+    padding: 100px 20px;
+    background-color: #004d40;
+}
+
+h1, h2 {
+    color: #004d40;
+}
+
+.logo {
+    font-size: 1.5em;
+    color: #81c784;
+    text-shadow: 0 0 5px #81c784, 0 0 10px #81c784;
+    animation: glow 1.5s infinite alternate;
+    text-decoration: none;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #81c784, 0 0 10px #81c784;
+    }
+    to {
+        text-shadow: 0 0 20px #81c784, 0 0 40px #81c784;
+    }
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 15px;
+}
+
+nav ul li a, nav ul li button {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: var(--button-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+nav ul li button.signup-btn {
+    background-color: #8e24aa;
+}
+
+nav ul li a:hover {
+    color: #007bff;
+}
+
+button {
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 5px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: all 0.3s ease;
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:hover {
+    background-color: #2e7d32;
+    transform: scale(1.05);
+}
+
+main {
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.two-column {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.two-column img {
+    width: 50%;
+    margin-right: 20px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.job-card {
+    background: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.carousel {
+    padding: 20px;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea {
+    background-color: #e8f5e9;
+    border: 1px solid #81c784;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    background-color: #004d40;
+}
+
+footer ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+footer ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+footer .social-icons img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 1000;
+}
+
+.spinner span {
+  position: absolute;
+  top: 50%;
+  left: var(--left);
+  width: 35px;
+  height: 7px;
+  background: #ffff;
+  animation: dominos 1s ease infinite;
+  box-shadow: 2px 2px 3px 0px black;
+}
+
+.spinner span:nth-child(1) { --left: 80px; animation-delay: 0.125s; }
+.spinner span:nth-child(2) { --left: 70px; animation-delay: 0.3s; }
+.spinner span:nth-child(3) { left: 60px; animation-delay: 0.425s; }
+.spinner span:nth-child(4) { animation-delay: 0.54s; left: 50px; }
+.spinner span:nth-child(5) { animation-delay: 0.665s; left: 40px; }
+.spinner span:nth-child(6) { animation-delay: 0.79s; left: 30px; }
+.spinner span:nth-child(7) { animation-delay: 0.915s; left: 20px; }
+.spinner span:nth-child(8) { left: 10px; }
+
+@keyframes dominos {
+  50% { opacity: 0.7; }
+  75% { transform: rotate(90deg); }
+  80% { opacity: 1; }
+}

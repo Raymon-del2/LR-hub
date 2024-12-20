@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - LR Hub</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --message-sent: #dcf8c6;
+            --message-received: #ffffff;
+        }
+
+        .chat-container {
+            max-width: 1200px;
+            margin: 70px auto 100px;
+            height: calc(100vh - 220px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-search {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            position: relative;
+        }
+
+        .chat-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .chat-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .chat-item-info {
+            flex: 1;
+        }
+
+        .chat-item-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .chat-item-last-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            background: white;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .online-count {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #34D399;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 12px;
+            left: 45px;
+            border: 2px solid white;
+        }
+
+        .chat-item.offline .online-indicator {
+            background: #9CA3AF;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f0f2f5;
+        }
+
+        .message {
+            max-width: 65%;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .message-sent {
+            background: var(--message-sent);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-received {
+            background: var(--message-received);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .chat-input button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .no-users-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .private-chat {
+            display: none;
+        }
+
+        .private-chat.active {
+            display: block;
+        }
+
+        .return-to-global {
+            padding: 8px 15px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            color: var(--text-color);
+        }
+
+        .return-to-global:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="home.html" class="logo">LR Hub</a>
+        </div>
+    </nav>
+
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <img id="menuProfileImage" src="assets/default-avatar.png" alt="Profile">
+            <div class="user-info">
+                <p id="menuProfileName" class="user-name">Loading...</p>
+                <p class="user-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="userLocation">Loading...</span>
+                </p>
+            </div>
+        </div>
+        <div class="menu-items">
+            <a href="home.html" class="menu-item">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="find-work.html" class="menu-item">
+                <i class="fas fa-search"></i> Find Work
+            </a>
+            <div id="postProjectLink" style="display: none;">
+                <a href="post-project.html" class="menu-item">
+                    <i class="fas fa-plus-circle"></i> Post Project
+                </a>
+            </div>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> Community
+            </a>
+            <a href="view-users.html" class="menu-item">
+                <i class="fas fa-user-friends"></i> View Others
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <a href="#" class="menu-item" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <div class="chat-search">
+                <input type="text" id="userSearch" class="search-input" placeholder="Search users..." oninput="searchUsers()">
+            </div>
+            <div class="chat-list" id="onlineUsersList">
+                <div class="no-users-message">
+                    <i class="fas fa-users" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>No users currently online</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-main">
+            <div class="chat-header">
+                <button id="returnToGlobal" class="return-to-global" style="display: none;" onclick="returnToGlobalChat()">
+                    <i class="fas fa-arrow-left"></i> Back to Global
+                </button>
+                <h2 id="chatTitle">LR Hub Community</h2>
+                <div class="online-count">
+                    <span id="onlineCount">0</span> online
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="support.html" class="footer-link">
+                <i class="fas fa-headset"></i>
+                Support
+            </a>
+            <a href="https://discord.gg/windsurf" target="_blank" class="discord-btn">
+                <i class="fab fa-discord"></i>
+                Join our Discord
+            </a>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        let currentUsers = new Map();
+        let currentChat = 'global';
+        let privateChats = new Map();
+
+        function addUser(user) {
+            currentUsers.set(user.id, user);
+            updateUsersList();
+        }
+
+        function removeUser(userId) {
+            currentUsers.delete(userId);
+            updateUsersList();
+        }
+
+        function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const usersList = document.getElementById('onlineUsersList');
+            
+            if (currentUsers.size === 0) {
+                usersList.innerHTML = `
+                    <div class="no-users-message">
+                        <i class="fas fa-users" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No users currently online</p>
+                    </div>`;
+                return;
+            }
+
+            usersList.innerHTML = Array.from(currentUsers.values())
+                .filter(user => user.name.toLowerCase().includes(searchTerm))
+                .map(user => `
+                    <div class="chat-item" onclick="startPrivateChat('${user.id}', '${user.name}')">
+                        <img src="${user.avatar}" alt="${user.name}" class="chat-item-avatar">
+                        <div class="online-indicator"></div>
+                        <div class="chat-item-info">
+                            <div class="chat-item-name">${user.name}</div>
+                            <div class="chat-item-last-message">Online</div>
+                        </div>
+                    </div>
+                `).join('') || `
+                    <div class="no-users-message">
+                        <p>No users found matching "${searchTerm}"</p>
+                    </div>`;
+        }
+
+        function startPrivateChat(userId, userName) {
+            currentChat = userId;
+            document.getElementById('chatTitle').textContent = `Chat with ${userName}`;
+            document.getElementById('returnToGlobal').style.display = 'block';
+            document.getElementById('chatMessages').innerHTML = '';
+            
+            if (!privateChats.has(userId)) {
+                privateChats.set(userId, []);
+            }
+            
+            displayMessages(privateChats.get(userId));
+        }
+
+        function returnToGlobalChat() {
+            currentChat = 'global';
+            document.getElementById('chatTitle').textContent = 'LR Hub Community';
+            document.getElementById('returnToGlobal').style.display = 'none';
+            document.getElementById('chatMessages').innerHTML = '';
+            displayMessages([]);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const newMessage = {
+                    id: Date.now(),
+                    text: message,
+                    sender: 'me',
+                    timestamp: new Date().toISOString()
+                };
+
+                if (currentChat === 'global') {
+                    // Handle global message
+                    displayMessage(newMessage);
+                } else {
+                    // Handle private message
+                    let chatMessages = privateChats.get(currentChat) || [];
+                    chatMessages.push(newMessage);
+                    privateChats.set(currentChat, chatMessages);
+                    displayMessage(newMessage);
+                }
+
+                input.value = '';
+            }
+        }
+
+        function displayMessage(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${message.sender === 'me' ? 'sent' : 'received'}`;
+            messageDiv.innerHTML = `
+                ${message.text}
+                <div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function displayMessages(messages) {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            messages.forEach(displayMessage);
+        }
+
+        // Handle Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUsersList();
+        });
+    </script>
+</body>
+</html>

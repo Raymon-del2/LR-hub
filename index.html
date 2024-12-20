@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LR Hub - Voice Acting Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #00CED1;
+            --text-color: #333;
+            --button-color: #000080;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            background: var(--bg-secondary);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--surface);
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .hamburger-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-info .profile-pic {
+            width: 60px;
+            height: 60px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .hamburger-menu ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .hamburger-menu ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+
+        .hamburger-menu ul li a:hover {
+            background: var(--bg-secondary);
+        }
+
+        .hamburger-menu ul li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            .nav-container {
+                padding: 1rem;
+            }
+        }
+
+        /* Logo Styles */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo span {
+            background: linear-gradient(to right, #ff0000, #ffd700, #0000ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: glow 2s ease-in-out infinite;
+            text-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 215, 0, 0.3),
+                0 0 30px rgba(0, 0, 255, 0.2);
+        }
+
+        .menu-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .menu-toggle span {
+            width: 24px;
+            height: 2px;
+            background-color: var(--text-color);
+            transition: 0.3s;
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #f5f5f5;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #000066;
+        }
+
+        .main-content {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+            background-color: var(--primary-color);
+            padding: 2rem 1rem;
+        }
+
+        .hero {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 4rem 1rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .features {
+            background: white;
+            padding: 4rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 250px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            transform-origin: top;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+            transform: scaleY(1);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-menu a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.1);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .dropdown-menu a:hover::before {
+            width: 100%;
+            right: auto;
+            left: 0;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .support-link {
+            animation: glowRed 2s ease-in-out infinite;
+            color: #ff0000;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes glowRed {
+            0%, 100% {
+                filter: brightness(100%);
+                text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+            }
+            50% {
+                filter: brightness(150%);
+                text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            }
+        }
+
+        .discord-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            background: #5865F2;
+            color: white !important;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .discord-link:hover {
+            background: #4752C4;
+            color: white !important;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                filter: brightness(100%);
+            }
+            50% {
+                filter: brightness(130%);
+            }
+        }
+
+        .email-signup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        .email-signup-content {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .email-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .email-form button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .email-form button:hover {
+            background: #000066;
+        }
+
+        .verification-code-input {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .verification-code-input input {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 1rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .modal-content button {
+            margin-top: 20px;
+        }
+
+        .modal-content button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .secondary {
+            background: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        /* Privacy Policy Modal Styles */
+        .privacy-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .privacy-modal.show {
+            opacity: 1;
+        }
+
+        .privacy-content {
+            position: relative;
+            background: white;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.5s ease;
+        }
+
+        .privacy-modal.show .privacy-content {
+            transform: translateY(0);
+        }
+
+        .accept-button {
+            display: none;
+            position: sticky;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff0000;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            animation: popIn 0.5s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .accept-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: translateX(-50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(-50%) scale(1.2);
+            }
+            100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Auth Form Modal Styles */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .auth-modal.show {
+            opacity: 1;
+        }
+
+        .auth-form {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            transform: translateY(-20px);
+            transition: transform 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-modal.show .auth-form {
+            transform: translateY(0);
+        }
+
+        .auth-form h2 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-toggle a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        /* Verification Code Modal Styles */
+        .verify-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .verify-modal.show {
+            opacity: 1;
+        }
+
+        .verify-form {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            transform: translateY(-20px);
+            transition: transform 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .verify-modal.show .verify-form {
+            transform: translateY(0);
+        }
+
+        .verify-title {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .verify-message {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .code-input {
+            width: 45px;
+            height: 55px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.2);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        .resend-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .resend-link:hover {
+            color: #0097a7;
+        }
+
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* Navigation and Button Styles */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .login-btn, .signup-btn {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .login-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .signup-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        /* Side Menu Styles */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+        }
+
+        .side-menu.show {
+            left: 0;
+        }
+
+        .menu-items {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-item {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .menu-item:hover {
+            color: var(--primary-color);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        .policy-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .policy-section h3 {
+            color: #00838f;
+            margin-bottom: 15px;
+        }
+
+        .policy-section ul {
+            padding-left: 20px;
+        }
+
+        .policy-section ul ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .policy-section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .policy-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .accept-button {
+            display: none;
+            position: sticky;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff0000;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            animation: popIn 0.5s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+        }
+
+        .accept-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+        }
+
+        /* Header Profile Styles */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-profile {
+            cursor: pointer;
+        }
+
+        .header-profile .profile-pic,
+        .profile-info .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--surface);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .hamburger-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hamburger-menu ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .hamburger-menu ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .hamburger-menu ul li a:hover {
+            background: var(--bg-secondary);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="index.html" class="logo">LR Hub</a>
+            <div class="nav-right">
+                <div class="header-profile">
+                    <img src="images/default-profile.png" alt="Profile" class="profile-pic">
+                </div>
+            </div>
+        </div>
+        <div class="hamburger-menu">
+            <div class="menu-header">
+                <div class="profile-info">
+                    <img src="images/default-profile.png" alt="Profile" class="profile-pic">
+                    <span class="user-name">Guest</span>
+                </div>
+            </div>
+            <ul>
+                <li><a href="find-work.html"><i class="fas fa-search"></i> Find Work</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="email-signup-modal" id="authModal">
+        <div class="email-signup-content">
+            <h2 id="authTitle">Sign Up</h2>
+            <form class="email-form" id="authForm" onsubmit="handleAuth(event)">
+                <input type="email" id="emailInput" placeholder="Enter your email" required>
+                <div id="passwordSection" style="display: none;">
+                    <input type="password" id="passwordInput" placeholder="Enter your password" required>
+                </div>
+                <div id="verificationSection" class="verification-code-input">
+                    <p>Enter the 6-digit code sent to your email:</p>
+                    <div style="display: flex; justify-content: center;">
+                        <input type="text" maxlength="1" class="code-input">
+                        <input type="text" maxlength="1" class="code-input">
+                        <input type="text" maxlength="1" class="code-input">
+                        <input type="text" maxlength="1" class="code-input">
+                        <input type="text" maxlength="1" class="code-input">
+                        <input type="text" maxlength="1" class="code-input">
+                    </div>
+                </div>
+                <button type="submit" id="submitButton">Continue</button>
+            </form>
+            <p class="login-link" id="authSwitch" onclick="toggleAuthMode()">
+                Already have an account? Log in
+            </p>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="privacy-modal" id="privacyModal">
+        <div class="privacy-content">
+            <h2 style="color: #00bcd4; text-align: center; margin-bottom: 30px;">Privacy Policy</h2>
+            
+            <section class="policy-section">
+                <h3>1. Information We Collect</h3>
+                <p>We collect the following types of information:</p>
+                <ul>
+                    <li>Personal Information:
+                        <ul>
+                            <li>Name and contact details</li>
+                            <li>Email address</li>
+                            <li>Phone number (optional)</li>
+                            <li>Profile pictures</li>
+                        </ul>
+                    </li>
+                    <li>Voice Acting Related Information:
+                        <ul>
+                            <li>Voice samples and recordings</li>
+                            <li>Language proficiencies</li>
+                            <li>Voice acting experience</li>
+                            <li>Portfolio materials</li>
+                        </ul>
+                    </li>
+                    <li>Technical Information:
+                        <ul>
+                            <li>IP address</li>
+                            <li>Browser type</li>
+                            <li>Device information</li>
+                            <li>Usage data</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>2. How We Use Your Information</h3>
+                <p>Your information helps us provide and improve our services:</p>
+                <ul>
+                    <li>Profile Creation and Management:
+                        <ul>
+                            <li>Creating and maintaining your voice actor profile</li>
+                            <li>Customizing your experience</li>
+                            <li>Managing your preferences</li>
+                        </ul>
+                    </li>
+                    <li>Platform Functionality:
+                        <ul>
+                            <li>Matching voice actors with clients</li>
+                            <li>Processing payments and transactions</li>
+                            <li>Facilitating communication between users</li>
+                        </ul>
+                    </li>
+                    <li>Service Improvement:
+                        <ul>
+                            <li>Analyzing usage patterns</li>
+                            <li>Enhancing user experience</li>
+                            <li>Developing new features</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>3. Information Sharing and Disclosure</h3>
+                <p>We share your information only in specific circumstances:</p>
+                <ul>
+                    <li>With Your Consent:
+                        <ul>
+                            <li>When you explicitly agree to share</li>
+                            <li>For profile visibility settings you choose</li>
+                        </ul>
+                    </li>
+                    <li>Service Providers:
+                        <ul>
+                            <li>Payment processors (e.g., Stripe)</li>
+                            <li>Cloud storage providers</li>
+                            <li>Analytics services</li>
+                        </ul>
+                    </li>
+                    <li>Legal Requirements:
+                        <ul>
+                            <li>Court orders</li>
+                            <li>Legal obligations</li>
+                            <li>Platform protection</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>4. Data Security</h3>
+                <p>We implement robust security measures:</p>
+                <ul>
+                    <li>Technical Measures:
+                        <ul>
+                            <li>SSL/TLS encryption</li>
+                            <li>Secure data storage</li>
+                            <li>Regular security audits</li>
+                        </ul>
+                    </li>
+                    <li>Access Controls:
+                        <ul>
+                            <li>Limited staff access</li>
+                            <li>Authentication requirements</li>
+                            <li>Regular security training</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>5. Your Rights</h3>
+                <p>You have the following rights regarding your data:</p>
+                <ul>
+                    <li>Access and Control:
+                        <ul>
+                            <li>View your personal data</li>
+                            <li>Update your information</li>
+                            <li>Delete your account</li>
+                        </ul>
+                    </li>
+                    <li>Data Portability:
+                        <ul>
+                            <li>Export your data</li>
+                            <li>Transfer to other services</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>6. Contact Information</h3>
+                <p>For any privacy-related questions or concerns:</p>
+                <ul>
+                    <li>Email: wambuiraymond03@gmail.com</li>
+                    <li>Response Time: Within 48 hours</li>
+                </ul>
+            </section>
+
+            <section class="policy-section">
+                <h3>7. Updates to This Policy</h3>
+                <p>We may update this policy periodically:</p>
+                <ul>
+                    <li>Notice of Changes:
+                        <ul>
+                            <li>Email notifications for major updates</li>
+                            <li>Website announcements</li>
+                            <li>Effective date updates</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <button class="accept-button" id="acceptButton">Accept Privacy Policy</button>
+        </div>
+    </div>
+
+    <!-- Auth Form Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-form">
+            <h2 id="authTitle">Sign In</h2>
+            <form id="authForm" onsubmit="return handleAuth(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="submit-btn">Continue</button>
+                <div class="auth-toggle">
+                    <span id="authToggleText">Don't have an account?</span>
+                    <a href="#" id="authToggleLink" onclick="toggleAuthMode(event)">Sign Up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Verification Code Modal -->
+    <div class="verify-modal" id="verifyModal">
+        <div class="verify-form">
+            <h2 class="verify-title">Verify Email</h2>
+            <p class="verify-message">We've sent a 6-digit code to your email</p>
+            <div class="code-inputs">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]">
+            </div>
+            <button class="verify-btn">Verify</button>
+            <div class="error-message" id="verifyError"></div>
+            <a class="resend-link" onclick="resendCode()">Resend Code</a>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <section class="hero">
+            <h1>Find Your Perfect Voice</h1>
+            <p>Join our community of voice actors and connect with amazing projects</p>
+        </section>
+
+        <section class="features">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Professional Voice Actors</h3>
+                    <p>Connect with talented voice actors for your projects</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Quality Recordings</h3>
+                    <p>Access high-quality voice recordings for any need</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Easy Collaboration</h3>
+                    <p>Streamlined process from casting to final delivery</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/find-voice-actors.html">Find Voice Actors</a>
+                <a href="/post-job.html">Post a Job</a>
+                <a href="/signin.html">Sign In / Register</a>
+            </div>
+            <div class="social-links">
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <div class="key-links">
+                <a href="https://discord.gg/yourdiscordlink" target="_blank">Join our Discord Server</a>
+                <a href="support.html" target="_blank">Support Me</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let isLogin = false;
+        let currentStep = 'email';
+        let isPrivacyPolicyAccepted = false;
+
+        // Check authentication status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'dashboard.html';
+            }
+
+            // Handle logo click
+            document.querySelector('.logo').addEventListener('click', function(e) {
+                e.preventDefault();
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Get all possible login/signup buttons
+            const loginButtons = document.querySelectorAll('.login-btn, .signup-btn, [href*="login"], [href*="signup"], .nav-link[href*="login"], .nav-link[href*="signup"]');
+            
+            loginButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showPrivacyPolicy();
+                });
+            });
+
+            // Add click handlers for menu items
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (item.textContent.includes('Login') || item.textContent.includes('Sign')) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showPrivacyPolicy();
+                    });
+                }
+            });
+        });
+
+        function showAuthForm(mode) {
+            isLogin = mode === 'login';
+            document.getElementById('authTitle').textContent = isLogin ? 'Log In' : 'Sign Up';
+            document.getElementById('authSwitch').textContent = isLogin ? 
+                "Don't have an account? Sign up" : "Already have an account? Log in";
+            document.getElementById('authModal').style.display = 'block';
+            resetForm();
+        }
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            showAuthForm(isLogin ? 'login' : 'signup');
+        }
+
+        function resetForm() {
+            currentStep = 'email';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('passwordSection').style.display = 'none';
+            document.getElementById('verificationSection').style.display = 'none';
+            document.getElementById('submitButton').textContent = 'Continue';
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('emailInput').value;
+
+            if (currentStep === 'email') {
+                // Simulate checking if email exists
+                const emailExists = Math.random() < 0.5; // Random for demo
+                
+                if (isLogin || emailExists) {
+                    if (!isLogin) {
+                        alert('Email already exists. Please log in instead.');
+                        toggleAuthMode();
+                        return;
+                    }
+                    currentStep = 'password';
+                    document.getElementById('passwordSection').style.display = 'block';
+                    document.getElementById('submitButton').textContent = 'Log In';
+                } else {
+                    currentStep = 'password';
+                    document.getElementById('passwordSection').style.display = 'block';
+                    document.getElementById('submitButton').textContent = 'Create Account';
+                }
+            } else if (currentStep === 'password') {
+                // Simulate sending verification code
+                const verificationCode = Math.floor(100000 + Math.random() * 900000);
+                alert(`Verification code sent to ${email}: ${verificationCode}`);
+                
+                currentStep = 'verification';
+                document.getElementById('verificationSection').style.display = 'block';
+                document.getElementById('submitButton').textContent = 'Verify';
+            } else if (currentStep === 'verification') {
+                if (isLogin) {
+                    // If logging in, go to dashboard
+                    window.location.href = '/dashboard.html';
+                } else {
+                    // If signing up, go to profile setup
+                    localStorage.setItem('userEmail', email);
+                    window.location.href = '/profile-setup.html';
+                }
+            }
+        }
+
+        // Handle verification code input
+        document.querySelectorAll('.code-input').forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && index < 5) {
+                    document.querySelectorAll('.code-input')[index + 1].focus();
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    document.querySelectorAll('.code-input')[index - 1].focus();
+                }
+            });
+        });
+
+        // Dropdown menu toggle with animation
+        const menuToggle = document.querySelector('.menu-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!menuToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
+
+        function showPrivacyPolicy() {
+            const modal = document.getElementById('privacyModal');
+            const content = modal.querySelector('.privacy-content');
+            const acceptButton = document.getElementById('acceptButton');
+
+            modal.style.display = 'block';
+            setTimeout(() => modal.classList.add('show'), 10);
+
+            // Check scroll position to show/hide accept button
+            content.addEventListener('scroll', function() {
+                const isAtBottom = content.scrollHeight - content.scrollTop <= content.clientHeight + 50;
+                if (isAtBottom && acceptButton.style.display !== 'block') {
+                    acceptButton.style.display = 'block';
+                }
+            });
+
+            acceptButton.addEventListener('click', function() {
+                localStorage.setItem('privacyAccepted', 'true');
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    window.location.href = 'auth.html';
+                }, 500);
+            });
+        }
+
+        function showVerifyForm(email) {
+            const authModal = document.getElementById('authModal');
+            const verifyModal = document.getElementById('verifyModal');
+
+            // Hide auth modal
+            authModal.classList.remove('show');
+            setTimeout(() => {
+                authModal.style.display = 'none';
+                // Show verify modal
+                verifyModal.style.display = 'block';
+                setTimeout(() => verifyModal.classList.add('show'), 10);
+            }, 500);
+
+            // Setup code input handling
+            setupCodeInputs();
+        }
+
+        function setupCodeInputs() {
+            const inputs = document.querySelectorAll('.code-input');
+
+            inputs.forEach((input, index) => {
+                // Auto-focus first input
+                if (index === 0) input.focus();
+
+                input.addEventListener('input', function(e) {
+                    // Only allow numbers
+                    this.value = this.value.replace(/[^0-9]/g, '');
+
+                    // Auto-focus next input
+                    if (this.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    // Handle backspace
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        function resendCode() {
+            // Clear existing inputs
+            document.querySelectorAll('.code-input').forEach(input => input.value = '');
+            // Focus first input
+            document.querySelector('.code-input').focus();
+            // Show message
+            const errorDiv = document.getElementById('verifyError');
+            errorDiv.style.display = 'block';
+            errorDiv.style.color = '#4CAF50';
+            errorDiv.textContent = 'New code sent!';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Update handleAuth function
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Show verification form
+            showVerifyForm(email);
+            return false;
+        }
+
+        // Toggle hamburger menu
+        function toggleMenu() {
+            const menu = document.querySelector('.hamburger-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.querySelector('.hamburger-menu');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const headerProfile = document.querySelector('.header-profile');
+            
+            if (menu && !menu.contains(e.target) && !menuToggle.contains(e.target) && !headerProfile.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Open menu when clicking profile picture
+        const headerProfile = document.querySelector('.header-profile');
+        if (headerProfile) {
+            headerProfile.addEventListener('click', function() {
+                const menu = document.querySelector('.hamburger-menu');
+                menu.classList.add('active');
+            });
+        }
+    </script>
+    <script src="js/script.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+</html>

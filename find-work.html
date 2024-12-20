@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Work - LR Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .projects-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .project-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-parts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .part-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .part-open {
+            background: #10B981;
+            color: white;
+        }
+
+        .part-taken {
+            background: #6B7280;
+            color: white;
+        }
+
+        .apply-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .apply-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .part-selection {
+            margin-bottom: 1.5rem;
+        }
+
+        .part-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .part-option:hover {
+            background: var(--bg-secondary);
+        }
+
+        .part-option input[type="radio"] {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .upload-section {
+            margin-top: 1rem;
+        }
+
+        #audioFile {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-application {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* Header Profile Styles */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-profile {
+            cursor: pointer;
+        }
+
+        .header-profile .profile-pic,
+        .profile-info .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--surface);
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .hamburger-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hamburger-menu ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .hamburger-menu ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .hamburger-menu ul li a:hover {
+            background: var(--bg-secondary);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="index.html" class="logo">LR Hub</a>
+            <div class="nav-right">
+                <div class="header-profile">
+                    <img src="images/default-profile.png" alt="Profile" class="profile-pic">
+                </div>
+            </div>
+        </div>
+        <div class="hamburger-menu">
+            <div class="menu-header">
+                <div class="profile-info">
+                    <img src="images/default-profile.png" alt="Profile" class="profile-pic">
+                    <span class="user-name">Guest</span>
+                </div>
+            </div>
+            <ul>
+                <li><a href="find-work.html"><i class="fas fa-search"></i> Find Work</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <img id="menuProfileImage" src="assets/default-avatar.png" alt="Profile">
+            <div class="user-info">
+                <p id="menuProfileName" class="user-name">Loading...</p>
+                <p class="user-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="userLocation">Loading...</span>
+                </p>
+            </div>
+        </div>
+        <div class="menu-items">
+            <a href="home.html" class="menu-item">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="find-work.html" class="menu-item">
+                <i class="fas fa-search"></i> Find Work
+            </a>
+            <div id="postProjectLink" style="display: none;">
+                <a href="post-project.html" class="menu-item">
+                    <i class="fas fa-plus-circle"></i> Post Project
+                </a>
+            </div>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> Community
+            </a>
+            <a href="view-users.html" class="menu-item">
+                <i class="fas fa-user-friends"></i> View Others
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <a href="#" class="menu-item" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+
+    <div class="projects-container">
+        <h1>Available Projects</h1>
+        <div id="projectGrid" class="project-grid">
+            <!-- Projects will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Apply for Project</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="applicationForm">
+                <div class="part-selection">
+                    <h3>Select a Part</h3>
+                    <div id="partOptions">
+                        <!-- Part options will be loaded here -->
+                    </div>
+                </div>
+                <div class="upload-section">
+                    <input type="file" id="audioFile" accept="audio/*">
+                    <label for="audioFile" class="upload-btn">
+                        <i class="fas fa-microphone"></i> Upload Voice Recording
+                    </label>
+                </div>
+                <button type="submit" class="submit-application">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="support.html" class="footer-link">
+                <i class="fas fa-headset"></i>
+                Support
+            </a>
+            <a href="https://discord.gg/windsurf" target="_blank" class="discord-btn">
+                <i class="fab fa-discord"></i>
+                Join our Discord
+            </a>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/project-service.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Load projects
+        function loadProjects() {
+            const projects = ProjectService.getProjects();
+            const grid = document.getElementById('projectGrid');
+            grid.innerHTML = '';
+
+            projects.forEach(project => {
+                const openParts = project.parts.filter(p => p.status === 'open').length;
+                const takenParts = project.parts.filter(p => p.status === 'accepted').length;
+
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <img src="${project.backgroundImage}" alt="${project.title}" class="project-image">
+                    <div class="project-content">
+                        <h2 class="project-title">${project.title}</h2>
+                        <p class="project-description">${project.description}</p>
+                        <div class="project-parts">
+                            ${openParts > 0 ? `<span class="part-tag part-open">${openParts} Open Parts</span>` : ''}
+                            ${takenParts > 0 ? `<span class="part-tag part-taken">${takenParts} Taken Parts</span>` : ''}
+                        </div>
+                        ${openParts > 0 ? `<button class="apply-btn" onclick="openApplication('${project.id}')">Apply Now</button>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Handle application modal
+        const modal = document.getElementById('applicationModal');
+        const closeBtn = document.querySelector('.close-modal');
+        let currentProject = null;
+
+        function openApplication(projectId) {
+            currentProject = ProjectService.getProject(projectId);
+            const partOptions = document.getElementById('partOptions');
+            partOptions.innerHTML = '';
+
+            currentProject.parts.forEach(part => {
+                if (part.status === 'open') {
+                    const option = document.createElement('div');
+                    option.className = 'part-option';
+                    option.innerHTML = `
+                        <input type="radio" name="part" value="${part.id}" id="part_${part.id}">
+                        <label for="part_${part.id}">
+                            <strong>${part.characterName}</strong>
+                            <p>${part.script}</p>
+                        </label>
+                    `;
+                    partOptions.appendChild(option);
+                }
+            });
+
+            modal.style.display = 'flex';
+        }
+
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        }
+
+        // Handle application submission
+        document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const partId = document.querySelector('input[name="part"]:checked')?.value;
+            const audioFile = document.getElementById('audioFile').files[0];
+            
+            if (!partId || !audioFile) {
+                alert('Please select a part and upload your voice recording');
+                return;
+            }
+
+            // In a real app, you would upload the audio file to a server
+            // For now, we'll use a data URL
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const audioUrl = e.target.result;
+                const auth = Auth.getAuthData();
+                
+                ProjectService.updateProjectPart(currentProject.id, partId, auth.email, audioUrl);
+                modal.style.display = 'none';
+                loadProjects();
+            };
+            reader.readAsDataURL(audioFile);
+        });
+
+        // Toggle hamburger menu
+        function toggleMenu() {
+            const menu = document.querySelector('.hamburger-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.querySelector('.hamburger-menu');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const headerProfile = document.querySelector('.header-profile');
+            
+            if (menu && !menu.contains(e.target) && !menuToggle.contains(e.target) && !headerProfile.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Open menu when clicking profile picture
+        const headerProfile = document.querySelector('.header-profile');
+        if (headerProfile) {
+            headerProfile.addEventListener('click', function() {
+                const menu = document.querySelector('.hamburger-menu');
+                menu.classList.add('active');
+            });
+        }
+
+        // Load projects on page load
+        document.addEventListener('DOMContentLoaded', loadProjects);
+    </script>
+</body>
+</html>

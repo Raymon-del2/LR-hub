@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - LR Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-container {
+            margin-top: 70px;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .success-details {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: var(--button-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #000066;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <a href="/" class="logo">
+                <span>LR Hub</span>
+            </a>
+            <div class="profile-section">
+                <img src="default-profile.jpg" alt="Profile" class="profile-pic">
+            </div>
+        </div>
+    </nav>
+
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h1 class="success-message">Payment Successful!</h1>
+            <p class="success-details" id="successDetails">
+                Thank you for your support! Your payment has been processed successfully.
+            </p>
+            <a href="dashboard.html" class="back-btn">Return to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+
+        // Update success message based on payment type
+        if (sessionId) {
+            fetch('/api/payment-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sessionId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const details = document.getElementById('successDetails');
+                if (data.type === 'subscription') {
+                    details.textContent = `Welcome to ${data.plan} plan! Your subscription has been activated.`;
+                } else {
+                    details.textContent = `Thank you for your donation of $${data.amount}! Your support means a lot to us.`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Handle logo click
+        document.querySelector('.logo').addEventListener('click', function(e) {
+            e.preventDefault();
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'dashboard.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
